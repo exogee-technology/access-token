@@ -1,20 +1,30 @@
 # OKTA Token CLI
 Get an OKTA token for an app.
 
-## Build
-Make sure you have the `x86_64-apple-darwin` target to cross-compile if you are building on Apple Silicon.
+## Binary Releases
+See github releases
+
+## Build Source
+`rustup` must already be installed - https://www.rust-lang.org/tools/install
 
 ```bash
-rustup target add x86_64-apple-darwin
-```
+# Build for your own platform
+make
 
-Then run the build script.
+# Install cross-compilation chains if not already done.
+# mingw-w64 is also required to build a windows target.
+make install-toolchains 
 
-```bash
-$ ./build.sh
+# Build for other platforms
+make build-mac-aarch64
+make build-mac
+make build-win
+make build-linux
+make build-linux-musl
 ```
 
 ## Usage
+- Provide `OKTA_CLIENT_ID`, `OKTA_URL` and `OKTA_LOGIN_REDIRECT_URI` environment variables.
 - If a username or password is not supplied, you will be prompted for the missing detail at runtime.
 - For quick usage, create an alias in your `.bashrc` or `.zshrc`.
 - If succesful, the OKTA token is displayed, and also copied to your clipboard, ready to use.
@@ -28,22 +38,6 @@ $ OKTA_CLIENT_ID='xxxxyyyy' \
 🕶️ OKTA Token Tool
 
 🔐 Getting Token for kye.lewis : *****
-✅ OKTA Token Copied To Clipboard
-
-eyJra....
-```
-
-```bash
-# Without Password
-$ OKTA_CLIENT_ID='xxxxyyyy' \
-   OKTA_URL='https://demo.okta.com/' \
-   OKTA_LOGIN_REDIRECT_URI='https://demo.site/login' \
-   ./okta-token user.name
-
-🕶️ OKTA Token Tool
-Password? 
-
-🔐 Getting Token for kye.lewis : ********
 ✅ OKTA Token Copied To Clipboard
 
 eyJra....
