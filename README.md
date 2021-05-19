@@ -1,4 +1,6 @@
-# OKTA Token CLI
+<img src="logo.png?raw=true" width="200">
+
+# tako: An OKTA Token CLI
 Get an OKTA token for an app.
 
 ## Binary Releases
