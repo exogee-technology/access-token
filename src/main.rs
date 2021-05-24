@@ -22,7 +22,7 @@ fn main() {
 
     eprintln!("\n🔐 Getting Token for {} : {}", String::from(&username).underline(), String::from(&masked_password).underline());
 
-    let token = okta::get_token(
+    let token = okta::get_access_token(
         String::from(&username),
         String::from(&password),
         okta::OktaConfig {

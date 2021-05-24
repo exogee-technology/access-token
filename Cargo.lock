@@ -787,6 +787,7 @@ dependencies = [
  "reqwest",
  "rpassword",
  "scraper",
+ "serde",
  "serde_json",
  "tokio",
 ]
