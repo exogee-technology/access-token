@@ -44,3 +44,15 @@ $ OKTA_CLIENT_ID='xxxxyyyy' \
 
 eyJra....
 ```
+
+## Setting up on Mac
+Download the release from [Github Releases](https://github.com/TechInSite/okta-token-cli/releases) and copy to your home directory.
+
+Run the file once by using right click / option click -> run, to approve the binary through gatekeeper.
+
+Add the following to the end of your `~/.zshrc` file:
+```bash
+alias token="OKTA_CLIENT_ID=xxxxyyyy OKTA_URL=https://demo.okta.com/ OKTA_LOGIN_REDIRECT_URL=http://callback ~/okta-token-mac yourusername"
+```
+
+Open a new terminal, and run `token`!
