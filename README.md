@@ -4,7 +4,7 @@
 Get an OKTA token for an app.
 
 ## Binary Releases
-See github releases
+See [/releases](github releases)
 
 ## Usage
 ```bash
