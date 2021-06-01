@@ -2,6 +2,7 @@ mod openid;
 mod pkce;
 
 use serde::{Serialize, Deserialize};
+use reqwest::Response;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct OktaAuthnRequest {
@@ -19,10 +20,36 @@ pub struct OktaAuthnResponse {
 }
 
 #[derive(Debug)]
+pub enum CodeChallengeMethod {
+    Plain,
+    S256
+}
+
+impl std::fmt::Display for CodeChallengeMethod {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+#[derive(Debug)]
+pub enum ResponseType {
+    Code,
+    Token,
+    IdToken,
+    None
+}
+
+impl std::fmt::Display for ResponseType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+#[derive(Debug)]
 pub struct OktaAuthorizeRequest {
     client_id: String,
-    response_type: String,
-    code_challenge_method: String,
+    response_type: ResponseType,
+    code_challenge_method: CodeChallengeMethod,
     code_challenge: String,
     redirect_uri: String,
     scope: String,
@@ -35,10 +62,11 @@ pub struct OktaAuthorizeRequest {
 
 impl OktaAuthorizeRequest {
     pub fn as_params(&self) -> Vec<(&str, String)> {
+
         vec![
             ("client_id", self.client_id.to_owned()),
-            ("response_type", self.response_type.to_owned()),
-            ("code_challenge_method", self.code_challenge_method.to_owned()),
+            ("response_type", self.response_type.to_string().to_lowercase().to_owned()),
+            ("code_challenge_method", self.code_challenge_method.to_string().to_owned()),
             ("code_challenge", self.code_challenge.to_owned()),
             ("redirect_uri", self.redirect_uri.to_owned()),
             ("scope", self.scope.to_owned()),
@@ -120,8 +148,8 @@ impl OktaClient {
 
         let request = OktaAuthorizeRequest {
             client_id: self.client_id.to_owned(),
-            response_type: "code".to_owned(),
-            code_challenge_method: "S256".to_owned(),
+            response_type: ResponseType::Code,
+            code_challenge_method: CodeChallengeMethod::S256,
             code_challenge: self.pkce.code_challenge.to_owned(),
             redirect_uri: self.login_redirect_url.to_owned(),
             scope: self.scopes.to_owned(),
