@@ -4,7 +4,7 @@
 Get an OKTA token for an app.
 
 ## Screenshot
-<img src="screenshot.png?raw=true" height="100">
+<img src="screenshot.png?raw=true" height="200">
 
 ## Binary Releases
 See [/releases](github releases)
