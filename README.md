@@ -1,7 +1,9 @@
 <img src="logo.png?raw=true" width="200">
 
 # tako: An OKTA Token CLI
-Get an OKTA token for an app.
+
+## Summary
+A small command-line application, written in rust, that allows you to get an OKTA token for use in an app.
 
 ## Screenshot
 <img src="screenshot.png?raw=true" height="200">
@@ -9,25 +11,38 @@ Get an OKTA token for an app.
 ## Binary Releases
 See [Github Releases](https://github.com/TechInSite/okta-token-cli/releases)
 
-## Usage
+## Example
 ```bash
 # Get an Access Token with provided username
-$ tako  --client-id=XXXXyyyy
-        --base-url=https://myapp.okta.com/ 
-        --login-redirect-url=http://myapp/callback 
-        --scopes='openid profile email groups' 
-        --username=my.user 
-        --copy-to-clipboard
+$ tako  --client-id=XXXXyyyy --base-url=https://myapp.okta.com/ 
+        --login-redirect-url=http://myapp/callback --scopes='openid profile email groups' 
+        --username=my.user --copy-to-clipboard
         get-access-token
-
 
 🎉 tako - An OKTA CLI Tool
 Password? (hidden) 
 
-🔐 Getting Access Token for kye.lewis
+🔐 Getting Access Token for my.user
 ✅ OKTA Token Copied To Clipboard
 
 eyJra....
+```
+
+## Usage
+```bash
+tako [--flags] [command]
+
+# Flags
+--base-url=https://myapp.okta.com/
+--client-id=XXXXyyyy
+--login-redirect-url=http://myapp/callback
+--scopes='openid profile email'
+--username=my.user
+--password=pa$sw0rd
+--copy-to-clipboard
+
+# Commands
+get-access-token
 ```
 
 ## Setting up on Mac
@@ -42,6 +57,17 @@ alias token="tako --client-id=XXXXyyyy --base-url=https://myapp.okta.com/ --logi
 
 Open a new terminal, and run `token`!
 
+## Limitations
+- Binary Releases are not notarized yet, so we can't create an install script.
+- Only basic auth (user/password) is implemented.
+- Only the following modes are impemented:
+  - `code_challenge_method: S256` 
+  - `response_type: code`
+  - `response_mode: form_post`
+  - `prompt: none`
+  - `grant_type: authorization_code`
+- `state` and `nonce` are not generated yet, they use static strings.
+- Error codes are not read from any of the endpoints, instead a generic error is returned.
 
 ## Build Source
 `rustup` must already be installed - https://www.rust-lang.org/tools/install
