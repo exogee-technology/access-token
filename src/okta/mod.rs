@@ -1,21 +1,7 @@
-use std::collections::HashMap;
+mod openid;
+mod pkce;
+
 use serde::{Serialize, Deserialize};
-
-pub struct PKCE {
-    pub code_verifier: String,
-    pub code_challenge: String,
-}
-
-impl PKCE {
-    /// Create a new Code Verifier
-    pub fn new() -> Self {
-        let code_verifier = pkce::code_verifier(128);
-        PKCE {
-            code_verifier: String::from_utf8(code_verifier.clone()).expect("Couldn't convert from vec to string"),
-            code_challenge: pkce::code_challenge(&code_verifier),
-        }
-    }
-}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct OktaAuthnRequest {
@@ -74,11 +60,6 @@ pub struct OktaTokenRequest {
     code:  String
 }
 
-pub struct OpenIDConfig {
-    authorization_endpoint: String,
-    token_endpoint: String,
-}
-
 pub struct OktaClient {
     client_id: String,
     base_url: String,
@@ -87,14 +68,14 @@ pub struct OktaClient {
     password: String,
     authorization_endpoint: String,
     token_endpoint: String,
-    pkce: PKCE,
+    pkce: pkce::PKCE,
     scopes: String,
 }
 
 impl OktaClient {
     /// Create a new OKTA Client
     pub fn new(username: String, password: String, client_id: String, login_redirect_url: String, base_url: String, scopes: String) -> Result<Self, String> {
-        let openid_config = get_openid_config(base_url.to_owned())?;
+        let openid_config = openid::get_openid_config(base_url.to_owned())?;
 
         Ok(OktaClient {
             username,
@@ -104,7 +85,7 @@ impl OktaClient {
             base_url,
             authorization_endpoint: openid_config.authorization_endpoint,
             token_endpoint: openid_config.token_endpoint,
-            pkce: PKCE::new(),
+            pkce: pkce::PKCE::new(),
             scopes,
         })
     }
@@ -183,7 +164,10 @@ impl OktaClient {
         let client = reqwest::Client::new();
 
         let req = client.post(&self.token_endpoint).form(&request).send().await;
-        let json = req.expect("Error getting Access Token").json::<HashMap<String, serde_json::Value>>().await;
+        let json = req
+            .expect("Error getting Access Token")
+            .json::<std::collections::HashMap<String, serde_json::Value>>().await;
+
         let json = json.expect("Invalid JSON");
 
         Ok(json["access_token"].as_str().expect("Missing access token").to_owned())
@@ -205,19 +189,3 @@ impl OktaClient {
         Ok(token)
     }
 }
-
-/// Get OpenID config from .well-known
-#[tokio::main]
-pub async fn get_openid_config(base_url: String) -> Result<OpenIDConfig, String> {
-    let url = format!("{}/oauth2/default/.well-known/openid-configuration", base_url);
-
-    let req = reqwest::get(url).await.expect("Error Getting URL");
-    let res = req.json::<HashMap<String, serde_json::Value>>().await;
-    let res = res.expect("Error parsing JSON");
-
-    let token_endpoint = res["token_endpoint"].as_str().expect("Missing token_endpoint");
-    let authorization_endpoint = res["authorization_endpoint"].as_str().expect("Missing authorization_endpoint");
-
-    Ok(OpenIDConfig { token_endpoint: token_endpoint.to_owned(), authorization_endpoint: authorization_endpoint.to_owned() })
-}
-
