@@ -3,6 +3,9 @@
 # tako: An OKTA Token CLI
 Get an OKTA token for an app.
 
+## Screenshot
+<img src="screenshot.png?raw=true" height="100">
+
 ## Binary Releases
 See github releases
 
