@@ -31,15 +31,19 @@ make build-linux-musl
 - For quick usage, create an alias in your `.bashrc` or `.zshrc`.
 - If succesful, the OKTA token is displayed, and also copied to your clipboard, ready to use.
 ```bash
-# With Username and Password
-$ OKTA_CLIENT_ID='xxxxyyyy' \
-   OKTA_URL='https://demo.okta.com/' \
-   OKTA_LOGIN_REDIRECT_URI='https://demo.site/login' \
-   ./okta-token user.name passw0rd
+# Get an Access Token with provided username
+$ tako  --client-id=XXXXyyyy
+        --base-url=https://myapp.okta.com/ 
+        --login-redirect-url=http://myapp/callback 
+        --scopes='openid profile email groups' 
+        --username=my.user 
+        get-access-token
 
-🕶️ OKTA Token Tool
 
-🔐 Getting Token for kye.lewis : *****
+🎉 tako - An OKTA CLI Tool
+Password? (hidden) 
+
+🔐 Getting Access Token for kye.lewis
 ✅ OKTA Token Copied To Clipboard
 
 eyJra....
@@ -50,9 +54,9 @@ Download the release from [Github Releases](https://github.com/TechInSite/okta-t
 
 Run the file once by using right click / option click -> run, to approve the binary through gatekeeper.
 
-Add the following to the end of your `~/.zshrc` file:
+Add a tako command to the end of your `~/.zshrc` file:
 ```bash
-alias token="OKTA_CLIENT_ID=xxxxyyyy OKTA_URL=https://demo.okta.com/ OKTA_LOGIN_REDIRECT_URL=http://callback ~/okta-token-mac yourusername"
+alias token="tako --client-id=XXXXyyyy --base-url=https://myapp.okta.com/ --login-redirect-url=http://myapp/callback --scopes='openid profile email groups' --username=my.user get-access-token"
 ```
 
 Open a new terminal, and run `token`!

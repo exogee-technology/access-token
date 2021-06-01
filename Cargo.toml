@@ -1,5 +1,5 @@
 [package]
-name = "okta-token"
+name = "tako"
 version = "0.1.0"
 authors = ["Kye Lewis <kye.lewis@techin.site>"]
 edition = "2018"
@@ -17,3 +17,4 @@ pkce = "0.1"
 colored = "2"
 clipboard = "0.5"
 rpassword = "5.0"
+clap = "3.0.0-beta.2"

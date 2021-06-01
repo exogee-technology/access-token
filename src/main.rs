@@ -1,44 +1,105 @@
 mod okta;
 
-extern crate colored;
 use colored::*;
-
-extern crate clipboard;
 use clipboard::ClipboardProvider;
 use clipboard::ClipboardContext;
+use clap::{App,Arg};
 
 fn main() {
 
-    eprintln!("{}", "\n🎉 OKTA Token Tool".bold());
+    let matches = App::new("tako")
+        .version("1.0")
+        .author("Kye Lewis <kye.lewis@techin.site>")
+        .about("An OKTA CLI Tool")
+        .arg(Arg::new("base-url")
+            .long("base-url")
+            .value_name("base-url")
+            .about("Base URL of the OKTA Tenant (ie. https://myapp.okta.com/)")
+            .required(true))
+        .arg(Arg::new("client-id")
+            .value_name("client-id")
+            .long("client-id")
+            .about("The OKTA Client ID associated with the app")
+            .required(true))
+        .arg(Arg::new("login-redirect-url")
+            .long("login-redirect-url")
+            .value_name("login-redirect-url")
+            .about("OKTA Login Redirect URL associated with the app")
+            .required(true))
+        .arg(Arg::new("scopes")
+            .long("scopes")
+            .value_name("scopes")
+            .default_missing_value("openid profile email")
+            .about("The scope(s) to request (ie. openid profile email)")
+            .required(true))
+        .arg(Arg::new("username")
+            .long("username")
+            .value_name("username")
+            .about("OKTA username (optional, prompted on CLI if omitted)")
+            .required(false))
+        .arg(Arg::new("password")
+            .long("password")
+            .value_name("password")
+            .about("OKTA password (optional, prompted on CLI if omitted)")
+            .required(false))
+        .subcommand(App::new("get-access-token")
+            .about("Returns a client access token"))
+        .get_matches();
 
-    let client_id = std::env::var("OKTA_CLIENT_ID").unwrap_or_else(|_| show_error(String::from("Missing OKTA_CLIENT_ID Environment Variable")));
-    let url = std::env::var("OKTA_URL").unwrap_or_else(|_| show_error(String::from("Missing OKTA_URL Environment Variable")));
-    let redirect_uri = std::env::var("OKTA_LOGIN_REDIRECT_URL").unwrap_or_else(|_| show_error(String::from("Missing OKTA_LOGIN_REDIRECT_URL Environment Variable")));
+    eprintln!("🎉 tako - An OKTA CLI Tool");
 
-    let username = std::env::args().nth(1).unwrap_or_else(|| read_input(String::from("Username? (hidden) ")));
-    let password = std::env::args().nth(2).unwrap_or_else(|| read_input(String::from("Password? (hidden) ")));
-    let masked_password = String::from_utf8(vec![b'*'; password.len()]).unwrap_or(String::from("*****"));
+    // Read Base URL, Redirect URL and Client ID from flags.
+    let url = String::from(matches.value_of("base-url").unwrap());
+    let login_redirect_url = String::from(matches.value_of("login-redirect-url").unwrap());
+    let client_id = String::from(matches.value_of("client-id").unwrap());
+    let scopes = String::from(matches.value_of("scopes").unwrap());
 
+    // Read Username and Password from flags, if provided, otherwise read from CLI.
+    let username = matches.value_of("username")
+        .map(|s| String::from(s))
+        .unwrap_or_else(|| read_input(String::from("Username? (hidden) ")));
 
-    eprintln!("\n🔐 Getting Token for {} : {}", String::from(&username).underline(), String::from(&masked_password).underline());
+    let password = matches.value_of("password")
+        .map(|s| String::from(s))
+        .unwrap_or_else(|| read_input(String::from("Password? (hidden) ")));
 
-    let token = okta::get_access_token(
-        String::from(&username),
-        String::from(&password),
-        okta::OktaConfig {
-            client_id: String::from(client_id),
-            url: String::from(url),
-            redirect_uri: String::from(redirect_uri)
+    match matches.subcommand() {
+        Some(("get-access-token", _)) => get_access_token(url, login_redirect_url, client_id, username, password, scopes),
+        _ => {},
+    }
+
+}
+
+fn get_access_token(url: String, login_redirect_url: String, client_id: String, username: String, password: String, scopes: String) -> () {
+
+    eprintln!("\n🔐 Getting Access Token for {}", String::from(&username).underline());
+
+    let client = okta::OktaClient::new(
+        String::from(username),
+        String::from(password),
+        String::from(client_id),
+        String::from(login_redirect_url),
+        String::from(url),
+        String::from(scopes));
+
+    match client {
+        Ok(client) => {
+            let token = client.get_access_token().unwrap_or_else(|e| show_error(e));
+
+            // Print token to stdout
+            eprintln!("✅  {}", "OKTA Token Copied To Clipboard\n".green().bold());
+            println!("{}", token);
+
+            // Copy to clipboard
+            let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
+            ctx.set_contents(token.to_owned()).unwrap();
+            ()
+        },
+        Err(e) => {
+            show_error(e);
+            ()
         }
-    );
-
-    let token = token.unwrap_or_else(|error| show_error(String::from(error)));
-
-    eprintln!("✅  {}", "OKTA Token Copied To Clipboard\n".green().bold());
-    println!("{}", token);
-
-    let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
-    ctx.set_contents(token.to_owned()).unwrap();
+    }
 
 }
 
