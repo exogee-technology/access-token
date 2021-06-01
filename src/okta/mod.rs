@@ -3,19 +3,24 @@ use serde::{Serialize, Deserialize};
 
 pub struct PKCE {
     pub code_verifier: String,
-    pub code_challenge: String
+    pub code_challenge: String,
 }
 
 impl PKCE {
-
     /// Create a new Code Verifier
     pub fn new() -> Self {
         let code_verifier = pkce::code_verifier(128);
         PKCE {
             code_verifier: String::from_utf8(code_verifier.clone()).expect("Couldn't convert from vec to string"),
-            code_challenge: pkce::code_challenge(&code_verifier)
+            code_challenge: pkce::code_challenge(&code_verifier),
         }
     }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct OktaAuthnRequest {
+    username: String,
+    password: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -25,6 +30,48 @@ pub struct OktaAuthnResponse {
     status: String,
     #[serde(rename = "sessionToken")]
     session_token: String,
+}
+
+#[derive(Debug)]
+pub struct OktaAuthorizeRequest {
+    client_id: String,
+    response_type: String,
+    code_challenge_method: String,
+    code_challenge: String,
+    redirect_uri: String,
+    scope: String,
+    prompt: String,
+    response_mode: String,
+    state: String,
+    nonce: String,
+    session_token: String,
+}
+
+impl OktaAuthorizeRequest {
+    pub fn as_params(&self) -> Vec<(&str, String)> {
+        vec![
+            ("client_id", self.client_id.to_owned()),
+            ("response_type", self.response_type.to_owned()),
+            ("code_challenge_method", self.code_challenge_method.to_owned()),
+            ("code_challenge", self.code_challenge.to_owned()),
+            ("redirect_uri", self.redirect_uri.to_owned()),
+            ("scope", self.scope.to_owned()),
+            ("prompt", self.prompt.to_owned()),
+            ("response_mode", self.response_mode.to_owned()),
+            ("state", self.state.to_owned()),
+            ("sessionToken", self.session_token.to_owned()),
+            ("nonce", self.nonce.to_owned()),
+        ]
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct OktaTokenRequest {
+    client_id: String,
+    code_verifier: String,
+    redirect_uri: String,
+    grant_type: String,
+    code:  String
 }
 
 pub struct OpenIDConfig {
@@ -41,14 +88,12 @@ pub struct OktaClient {
     authorization_endpoint: String,
     token_endpoint: String,
     pkce: PKCE,
-    scopes: String
+    scopes: String,
 }
 
 impl OktaClient {
-
     /// Create a new OKTA Client
     pub fn new(username: String, password: String, client_id: String, login_redirect_url: String, base_url: String, scopes: String) -> Result<Self, String> {
-
         let openid_config = get_openid_config(base_url.to_owned())?;
 
         Ok(OktaClient {
@@ -60,22 +105,26 @@ impl OktaClient {
             authorization_endpoint: openid_config.authorization_endpoint,
             token_endpoint: openid_config.token_endpoint,
             pkce: PKCE::new(),
-            scopes
+            scopes,
         })
     }
 
     /// Use a username and password to get a session token
     pub async fn do_okta_authn(&self) -> Result<OktaAuthnResponse, String> {
 
+        let request = OktaAuthnRequest {
+            username: self.username.to_owned(),
+            password: self.password.to_owned(),
+        };
+
         let client = reqwest::Client::new();
 
-        let json = serde_json::json!({
-            "username": self.username,
-            "password": self.password
-        });
-
         // Post to /authn
-        let req = client.post(format!("{}/api/v1/authn", self.base_url)).json(&json).send().await;
+        let req = client
+            .post(format!("{}/api/v1/authn", self.base_url))
+            .json(&request)
+            .send().await;
+
         let res = req.expect("Error, got bad or no reply from /api/v1/authn");
 
         // Deserialize
@@ -87,24 +136,25 @@ impl OktaClient {
 
     /// Use a Session Token to get an auth code
     pub async fn do_okta_authorize(&self, session_token: String) -> Result<String, String> {
-        let client = reqwest::Client::new();
 
-        let params = [
-            ("client_id", self.client_id.to_owned()),
-            ("response_type", "code".to_owned()),
-            ("code_challenge_method", "S256".to_owned()),
-            ("code_challenge", self.pkce.code_challenge.to_owned()),
-            ("redirect_uri", self.login_redirect_url.to_owned()),
-            ("scope", self.scopes.to_owned()),
-            ("prompt", "none".to_owned()),
-            ("response_mode", "form_post".to_owned()),
-            ("state", "a".to_owned()),
-            ("nonce", "a".to_owned()),
-            ("sessionToken", session_token.to_owned())
-        ];
+        let request = OktaAuthorizeRequest {
+            client_id: self.client_id.to_owned(),
+            response_type: "code".to_owned(),
+            code_challenge_method: "S256".to_owned(),
+            code_challenge: self.pkce.code_challenge.to_owned(),
+            redirect_uri: self.login_redirect_url.to_owned(),
+            scope: self.scopes.to_owned(),
+            prompt: "none".to_owned(),
+            response_mode: "form_post".to_owned(),
+            state: "a".to_owned(),
+            nonce: "a".to_owned(),
+            session_token: session_token.to_owned(),
+        };
 
-        let url = reqwest::Url::parse_with_params(&self.authorization_endpoint, &params)
+        let url = reqwest::Url::parse_with_params(&self.authorization_endpoint, &request.as_params())
             .expect("Failed to create URL");
+
+        let client = reqwest::Client::new();
 
         // Get Text Response to parse HTML for the code response
         let req = client.get(url).send().await;
@@ -122,19 +172,20 @@ impl OktaClient {
     /// Use an auth code to get an access token
     pub async fn do_okta_token(&self, auth_code: String) -> Result<String, String> {
 
-        let form = [
-            ("client_id", self.client_id.to_owned()),
-            ("code_verifier", self.pkce.code_verifier.to_owned()),
-            ("redirect_uri", self.login_redirect_url.to_owned()),
-            ("grant_type", "authorization_code".to_owned()),
-            ("code", auth_code.to_owned())
-        ];
+        let request = OktaTokenRequest {
+            client_id: self.client_id.to_owned(),
+            code_verifier: self.pkce.code_verifier.to_owned(),
+            redirect_uri: self.login_redirect_url.to_owned(),
+            grant_type: "authorization_code".to_owned(),
+            code: auth_code.to_owned()
+        };
 
         let client = reqwest::Client::new();
 
-        let req = client.post(&self.token_endpoint).form(&form).send().await;
+        let req = client.post(&self.token_endpoint).form(&request).send().await;
         let json = req.expect("Error getting Access Token").json::<HashMap<String, serde_json::Value>>().await;
         let json = json.expect("Invalid JSON");
+
         Ok(json["access_token"].as_str().expect("Missing access token").to_owned())
     }
 
@@ -158,7 +209,6 @@ impl OktaClient {
 /// Get OpenID config from .well-known
 #[tokio::main]
 pub async fn get_openid_config(base_url: String) -> Result<OpenIDConfig, String> {
-
     let url = format!("{}/oauth2/default/.well-known/openid-configuration", base_url);
 
     let req = reqwest::get(url).await.expect("Error Getting URL");
