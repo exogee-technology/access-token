@@ -93,18 +93,17 @@ fn get_access_token(url: String, login_redirect_url: String, client_id: String, 
             let token = client.get_access_token().unwrap_or_else(|e| show_error(e));
 
             // Print token to stdout
-            if copy_to_clipboard {
-                eprintln!("✅  {}", "OKTA Token Copied To Clipboard\n".green().bold());
-            }
             println!("{}", token);
 
+            // Copy to clipboard if flag is set
             if copy_to_clipboard {
+                eprintln!("\n✅  {}", "Access Token Copied To Clipboard\n".green().bold());
                 let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
                 ctx.set_contents(token.to_owned()).unwrap();
             }
         },
         Err(e) => {
-            show_error(e);
+          show_error(e);
         }
     }
 
