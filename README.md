@@ -26,10 +26,6 @@ make build-linux-musl
 ```
 
 ## Usage
-- Provide `OKTA_CLIENT_ID`, `OKTA_URL` and `OKTA_LOGIN_REDIRECT_URI` environment variables.
-- If a username or password is not supplied, you will be prompted for the missing detail at runtime.
-- For quick usage, create an alias in your `.bashrc` or `.zshrc`.
-- If succesful, the OKTA token is displayed, and also copied to your clipboard, ready to use.
 ```bash
 # Get an Access Token with provided username
 $ tako  --client-id=XXXXyyyy
@@ -37,6 +33,7 @@ $ tako  --client-id=XXXXyyyy
         --login-redirect-url=http://myapp/callback 
         --scopes='openid profile email groups' 
         --username=my.user 
+        --copy-to-clipboard
         get-access-token
 
 
@@ -56,7 +53,7 @@ Run the file once by using right click / option click -> run, to approve the bin
 
 Add a tako command to the end of your `~/.zshrc` file:
 ```bash
-alias token="tako --client-id=XXXXyyyy --base-url=https://myapp.okta.com/ --login-redirect-url=http://myapp/callback --scopes='openid profile email groups' --username=my.user get-access-token"
+alias token="tako --client-id=XXXXyyyy --base-url=https://myapp.okta.com/ --login-redirect-url=http://myapp/callback --scopes='openid profile email groups' --username=my.user --copy-to-clipboard get-access-token"
 ```
 
 Open a new terminal, and run `token`!

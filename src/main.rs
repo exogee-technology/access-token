@@ -21,6 +21,11 @@ fn main() {
             .long("client-id")
             .about("The OKTA Client ID associated with the app")
             .required(true))
+        .arg(Arg::new("copy-to-clipboard")
+            .long("copy-to-clipboard")
+            .value_name("copy-to-clipboard")
+            .takes_value(false)
+            .about("Copy the result to the system clipboard"))
         .arg(Arg::new("login-redirect-url")
             .long("login-redirect-url")
             .value_name("login-redirect-url")
@@ -53,6 +58,7 @@ fn main() {
     let login_redirect_url = String::from(matches.value_of("login-redirect-url").unwrap());
     let client_id = String::from(matches.value_of("client-id").unwrap());
     let scopes = String::from(matches.value_of("scopes").unwrap());
+    let copy_to_clipboard = matches.is_present("copy-to-clipboard");
 
     // Read Username and Password from flags, if provided, otherwise read from CLI.
     let username = matches.value_of("username")
@@ -64,13 +70,13 @@ fn main() {
         .unwrap_or_else(|| read_input(String::from("Password? (hidden) ")));
 
     match matches.subcommand() {
-        Some(("get-access-token", _)) => get_access_token(url, login_redirect_url, client_id, username, password, scopes),
+        Some(("get-access-token", _)) => get_access_token(url, login_redirect_url, client_id, username, password, scopes, copy_to_clipboard),
         _ => {},
     }
 
 }
 
-fn get_access_token(url: String, login_redirect_url: String, client_id: String, username: String, password: String, scopes: String) -> () {
+fn get_access_token(url: String, login_redirect_url: String, client_id: String, username: String, password: String, scopes: String, copy_to_clipboard: bool) -> () {
 
     eprintln!("\n🔐 Getting Access Token for {}", String::from(&username).underline());
 
@@ -87,17 +93,18 @@ fn get_access_token(url: String, login_redirect_url: String, client_id: String, 
             let token = client.get_access_token().unwrap_or_else(|e| show_error(e));
 
             // Print token to stdout
-            eprintln!("✅  {}", "OKTA Token Copied To Clipboard\n".green().bold());
+            if copy_to_clipboard {
+                eprintln!("✅  {}", "OKTA Token Copied To Clipboard\n".green().bold());
+            }
             println!("{}", token);
 
-            // Copy to clipboard
-            let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
-            ctx.set_contents(token.to_owned()).unwrap();
-            ()
+            if copy_to_clipboard {
+                let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
+                ctx.set_contents(token.to_owned()).unwrap();
+            }
         },
         Err(e) => {
             show_error(e);
-            ()
         }
     }
 
