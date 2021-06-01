@@ -49,7 +49,7 @@ impl OktaClient {
     /// Create a new OKTA Client
     pub fn new(username: String, password: String, client_id: String, login_redirect_url: String, base_url: String, scopes: String) -> Result<Self, String> {
 
-        let openid_config = get_openid_config(String::from(&base_url))?;
+        let openid_config = get_openid_config(base_url.to_owned())?;
 
         Ok(OktaClient {
             username,
@@ -81,7 +81,7 @@ impl OktaClient {
         // Deserialize
         match res.json::<OktaAuthnResponse>().await {
             Ok(response) => Ok(response),
-            Err(_) => Err(String::from("Couldn't understand /api/v1/authn response"))
+            Err(_) => Err("Couldn't understand /api/v1/authn response".to_owned())
         }
     }
 
@@ -90,17 +90,17 @@ impl OktaClient {
         let client = reqwest::Client::new();
 
         let params = [
-            ("client_id", String::from(&self.client_id)),
-            ("response_type", String::from("code")),
-            ("code_challenge_method", String::from("S256")),
-            ("code_challenge", String::from(&self.pkce.code_challenge)),
-            ("redirect_uri", String::from(&self.login_redirect_url)),
-            ("scope", String::from(&self.scopes)),
-            ("prompt", String::from("none")),
-            ("response_mode", String::from("form_post")),
-            ("state", String::from("a")),
-            ("nonce", String::from("a")),
-            ("sessionToken", String::from(session_token))
+            ("client_id", self.client_id.to_owned()),
+            ("response_type", "code".to_owned()),
+            ("code_challenge_method", "S256".to_owned()),
+            ("code_challenge", self.pkce.code_challenge.to_owned()),
+            ("redirect_uri", self.login_redirect_url.to_owned()),
+            ("scope", self.scopes.to_owned()),
+            ("prompt", "none".to_owned()),
+            ("response_mode", "form_post".to_owned()),
+            ("state", "a".to_owned()),
+            ("nonce", "a".to_owned()),
+            ("sessionToken", session_token.to_owned())
         ];
 
         let url = reqwest::Url::parse_with_params(&self.authorization_endpoint, &params)
@@ -114,20 +114,20 @@ impl OktaClient {
         // Scrape code from <input name='code' value='....' />
         let dom = scraper::Html::parse_document(&text);
         let selector = scraper::Selector::parse(r#"input[name="code"]"#).unwrap();
-        Ok(String::from(dom.select(&selector).next()
+        Ok(dom.select(&selector).next()
             .expect("Missing Input with code- maybe got an error instead")
-            .value().attr("value").expect("Missing value on code")))
+            .value().attr("value").expect("Missing value on code").to_owned())
     }
 
     /// Use an auth code to get an access token
     pub async fn do_okta_token(&self, auth_code: String) -> Result<String, String> {
 
         let form = [
-            ("client_id", String::from(&self.client_id)),
-            ("code_verifier", String::from(&self.pkce.code_verifier)),
-            ("redirect_uri", String::from(&self.login_redirect_url)),
-            ("grant_type", String::from("authorization_code")),
-            ("code", String::from(auth_code))
+            ("client_id", self.client_id.to_owned()),
+            ("code_verifier", self.pkce.code_verifier.to_owned()),
+            ("redirect_uri", self.login_redirect_url.to_owned()),
+            ("grant_type", "authorization_code".to_owned()),
+            ("code", auth_code.to_owned())
         ];
 
         let client = reqwest::Client::new();
@@ -135,7 +135,7 @@ impl OktaClient {
         let req = client.post(&self.token_endpoint).form(&form).send().await;
         let json = req.expect("Error getting Access Token").json::<HashMap<String, serde_json::Value>>().await;
         let json = json.expect("Invalid JSON");
-        Ok(String::from(json["access_token"].as_str().expect("Missing access token")))
+        Ok(json["access_token"].as_str().expect("Missing access token").to_owned())
     }
 
     /// Get an access token for a specific OKTA tenant and client/app
@@ -168,6 +168,6 @@ pub async fn get_openid_config(base_url: String) -> Result<OpenIDConfig, String>
     let token_endpoint = res["token_endpoint"].as_str().expect("Missing token_endpoint");
     let authorization_endpoint = res["authorization_endpoint"].as_str().expect("Missing authorization_endpoint");
 
-    Ok(OpenIDConfig { token_endpoint: String::from(token_endpoint), authorization_endpoint: String::from(authorization_endpoint) })
+    Ok(OpenIDConfig { token_endpoint: token_endpoint.to_owned(), authorization_endpoint: authorization_endpoint.to_owned() })
 }
 

@@ -54,20 +54,20 @@ fn main() {
     eprintln!("🎉 tako - An OKTA CLI Tool");
 
     // Read Base URL, Redirect URL and Client ID from flags.
-    let url = String::from(matches.value_of("base-url").unwrap());
-    let login_redirect_url = String::from(matches.value_of("login-redirect-url").unwrap());
-    let client_id = String::from(matches.value_of("client-id").unwrap());
-    let scopes = String::from(matches.value_of("scopes").unwrap());
+    let url = matches.value_of("base-url").unwrap().to_owned();
+    let login_redirect_url = matches.value_of("login-redirect-url").unwrap().to_owned();
+    let client_id = matches.value_of("client-id").unwrap().to_owned();
+    let scopes = matches.value_of("scopes").unwrap().to_owned();
     let copy_to_clipboard = matches.is_present("copy-to-clipboard");
 
     // Read Username and Password from flags, if provided, otherwise read from CLI.
     let username = matches.value_of("username")
-        .map(|s| String::from(s))
-        .unwrap_or_else(|| read_input(String::from("Username? (hidden) ")));
+        .map(|s| s.to_owned())
+        .unwrap_or_else(|| read_input("Username? (hidden) ".to_owned()));
 
     let password = matches.value_of("password")
-        .map(|s| String::from(s))
-        .unwrap_or_else(|| read_input(String::from("Password? (hidden) ")));
+        .map(|s| s.to_owned())
+        .unwrap_or_else(|| read_input("Password? (hidden) ".to_owned()));
 
     match matches.subcommand() {
         Some(("get-access-token", _)) => get_access_token(url, login_redirect_url, client_id, username, password, scopes, copy_to_clipboard),
@@ -78,27 +78,25 @@ fn main() {
 
 fn get_access_token(url: String, login_redirect_url: String, client_id: String, username: String, password: String, scopes: String, copy_to_clipboard: bool) -> () {
 
-    eprintln!("\n🔐 Getting Access Token for {}", String::from(&username).underline());
+    eprintln!("\n🔐 Getting Access Token for {}", username.to_owned().underline());
 
     let client = okta::OktaClient::new(
-        String::from(username),
-        String::from(password),
-        String::from(client_id),
-        String::from(login_redirect_url),
-        String::from(url),
-        String::from(scopes));
+        username.to_owned(),
+        password.to_owned(),
+        client_id.to_owned(),
+        login_redirect_url.to_owned(),
+        url.to_owned(),
+        scopes.to_owned());
 
     match client {
         Ok(client) => {
             let token = client.get_access_token().unwrap_or_else(|e| show_error(e));
 
             // Print token to stdout
-            if copy_to_clipboard {
-                eprintln!("✅  {}", "OKTA Token Copied To Clipboard\n".green().bold());
-            }
             println!("{}", token);
 
             if copy_to_clipboard {
+                eprintln!("\n✅  {}", "OKTA Token Copied To Clipboard\n".green().bold());
                 let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
                 ctx.set_contents(token.to_owned()).unwrap();
             }
@@ -111,7 +109,7 @@ fn get_access_token(url: String, login_redirect_url: String, client_id: String, 
 }
 
 fn read_input(message: String) -> String {
-    rpassword::prompt_password_stderr(&message).unwrap_or(String::from(""))
+    rpassword::prompt_password_stderr(&message).unwrap_or("".to_owned())
 
 }
 
