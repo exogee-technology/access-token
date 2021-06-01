@@ -7,7 +7,7 @@ Get an OKTA token for an app.
 <img src="screenshot.png?raw=true" height="200">
 
 ## Binary Releases
-See [/releases](github releases)
+See [Github Releases](https://github.com/TechInSite/okta-token-cli/releases)
 
 ## Usage
 ```bash
