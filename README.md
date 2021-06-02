@@ -66,8 +66,7 @@ Open a new terminal, and run `token`!
   - `response_mode: form_post`
   - `prompt: none`
   - `grant_type: authorization_code`
-- `state` and `nonce` are not generated yet, they use static strings.
-- Error codes are not read from any of the endpoints, instead a generic error is returned.
+- Error codes are not read from some endpoints, instead a generic error is returned.
 
 ## Build Source
 `rustup` must already be installed - https://www.rust-lang.org/tools/install
