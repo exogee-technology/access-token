@@ -1,4 +1,4 @@
-use crate::okta::error::OktaClientError;
+use error::OktaClientError;
 
 mod openid;
 mod pkce;
@@ -46,7 +46,7 @@ impl OktaClient {
         let okta_session = self.do_okta_authn().await?;
 
         // Get Auth Code from /authorization
-        let auth_code = self.do_oauth_authorize(okta_session.session_token.to_owned()).await?;
+        let auth_code = self.do_oauth_authorize(okta_session.session_token.expect("Missing Session Token").to_owned()).await?;
 
         // Get Access Token from /token
         let token = self.do_oauth_token(auth_code.to_owned()).await?;

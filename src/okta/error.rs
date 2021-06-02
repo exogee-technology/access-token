@@ -2,7 +2,8 @@
 pub enum OktaClientError {
     Unknown,
     General(String),
-    Network(String)
+    Network(String),
+    OktaAPI(String),
 }
 
 impl From<reqwest::Error> for OktaClientError {
@@ -23,6 +24,7 @@ impl std::fmt::Display for OktaClientError {
             OktaClientError::Unknown => f.write_str("Unknown Error"),
             OktaClientError::General(e) => f.write_str(&format!("General Error: {}", e)),
             OktaClientError::Network(e) => f.write_str(&format!("Network Error: {}", e)),
+            OktaClientError::OktaAPI(e) => f.write_str(&format!("OKTA API Error: {}", e)),
         }
     }
 }
