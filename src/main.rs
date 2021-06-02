@@ -4,6 +4,7 @@ use colored::*;
 use clipboard::ClipboardProvider;
 use clipboard::ClipboardContext;
 use clap::{App,Arg};
+use crate::okta::error::OktaClientError;
 
 fn main() {
 
@@ -113,7 +114,7 @@ fn read_input(message: String) -> String {
 
 }
 
-fn show_error(error: String) -> String {
+fn show_error(error: OktaClientError) -> String {
     eprintln!("😔 {} {}", "Error:".red().bold(), error);
     std::process::exit(1);
 }

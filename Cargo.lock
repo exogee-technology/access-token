@@ -1558,6 +1558,7 @@ dependencies = [
  "clipboard",
  "colored",
  "pkce",
+ "rand 0.8.3",
  "reqwest",
  "rpassword",
  "scraper",

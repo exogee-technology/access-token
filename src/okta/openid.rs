@@ -1,3 +1,5 @@
+use crate::okta::error::OktaClientError;
+
 pub struct OpenIDConfig {
     pub authorization_endpoint: String,
     pub token_endpoint: String,
@@ -5,7 +7,7 @@ pub struct OpenIDConfig {
 
 /// Get OpenID config from .well-known
 #[tokio::main]
-pub async fn get_openid_config(base_url: String) -> Result<OpenIDConfig, String> {
+pub async fn get_openid_config(base_url: String) -> Result<OpenIDConfig, OktaClientError> {
     let url = format!("{}/oauth2/default/.well-known/openid-configuration", base_url);
 
     let req = reqwest::get(url).await.expect("Error Getting URL");
