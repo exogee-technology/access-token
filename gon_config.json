@@ -1,0 +1,12 @@
+{
+  "notarize": [{
+    "path": "target/x86_64-apple-darwin/release/tako",
+    "bundle_id": "@env:BUNDLE_ID",
+    "staple": true
+  }],
+
+  "apple_id": {
+     "username": "@env:AC_USERNAME",
+     "password": "@env:AC_PASSWORD"
+  }
+}

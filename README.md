@@ -86,3 +86,10 @@ make build-win
 make build-linux
 make build-linux-musl
 ```
+
+## Codesign and Notarize
+We are using `gon` to assist in codesign and notarization. Run the following command from the project root directory. 
+
+```bash
+BUNDLE_ID=your.bundle.id AC_USERNAME=apple.connect.username AC_PASSWORD=app.specific.password gon gon_config.json
+```
