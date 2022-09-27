@@ -1,5 +1,3 @@
-<img src="logo.png?raw=true" width="200">
-
 # tako: An OKTA Token CLI
 
 ## Summary
@@ -14,9 +12,10 @@ See [Github Releases](https://github.com/TechInSite/okta-token-cli/releases)
 ## Example
 ```bash
 # Get an Access Token with provided username
-$ tako  --client-id=XXXXyyyy --base-url=https://myapp.okta.com/ 
-        --login-redirect-url=http://myapp/callback --scopes='openid profile email groups' 
-        --username=my.user --copy-to-clipboard
+$ tako  --client-id XXXXyyyy --base-url https://myapp.okta.com/ 
+        --authorization-server-id abc123
+        --login-redirect-url http://myapp/callback 
+        --username my.user --copy-to-clipboard
         get-access-token
 
 🎉 tako - An OKTA CLI Tool
@@ -33,13 +32,15 @@ eyJra....
 tako [--flags] [command]
 
 # Flags
---base-url=https://myapp.okta.com/
---client-id=XXXXyyyy
---login-redirect-url=http://myapp/callback
---scopes='openid profile email'
---username=my.user
---password=pa$sw0rd
+--base-url https://myapp.okta.com/
+--client-id XXXXyyyy
+--authorization-server-id abc123
+--login-redirect-url http://myapp/callback
+--scopes 'openid profile email'
+--username my.user
+--password pa$sw0rd
 --copy-to-clipboard
+--print-token-json
 
 # Commands
 get-access-token

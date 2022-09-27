@@ -23,3 +23,5 @@ build-linux:
 build-linux-musl:
 	cargo build --release --target x86_64-unknown-linux-musl  --bin tako
 
+format:
+	cargo fmt

@@ -1,14 +1,13 @@
-/// Call the OAuth authorize endpoint
-
-use crate::okta::OktaClient;
-use std::string::String;
-use rand::Rng;
 use crate::okta::error::OktaClientError;
+/// Call the OAuth authorize endpoint
+use crate::okta::OktaClient;
+use rand::Rng;
+use std::string::String;
 
 #[derive(Debug)]
 pub enum CodeChallengeMethod {
     //Plain,      // Not Implemented
-    S256
+    S256,
 }
 
 impl std::fmt::Display for CodeChallengeMethod {
@@ -71,7 +70,6 @@ impl std::fmt::Display for Prompt {
     }
 }
 
-
 #[derive(Debug)]
 pub struct OktaAuthorizeRequest {
     pub client_id: String,
@@ -89,11 +87,13 @@ pub struct OktaAuthorizeRequest {
 
 impl OktaAuthorizeRequest {
     pub fn as_params(&self) -> Vec<(&str, String)> {
-
         vec![
             ("client_id", self.client_id.to_owned()),
             ("response_type", self.response_type.to_string().to_owned()),
-            ("code_challenge_method", self.code_challenge_method.to_string().to_owned()),
+            (
+                "code_challenge_method",
+                self.code_challenge_method.to_string().to_owned(),
+            ),
             ("code_challenge", self.code_challenge.to_owned()),
             ("redirect_uri", self.redirect_uri.to_owned()),
             ("scope", self.scope.to_owned()),
@@ -107,10 +107,11 @@ impl OktaAuthorizeRequest {
 }
 
 impl OktaClient {
-
     /// Use a Session Token to get an auth code
-    pub async fn do_oauth_authorize(&self, session_token: String) -> Result<String, OktaClientError> {
-
+    pub async fn do_oauth_authorize(
+        &self,
+        session_token: String,
+    ) -> Result<String, OktaClientError> {
         let request = OktaAuthorizeRequest {
             client_id: self.client_id.to_owned(),
             response_type: ResponseType::Code,
@@ -125,8 +126,9 @@ impl OktaClient {
             session_token: session_token.to_owned(),
         };
 
-        let url = reqwest::Url::parse_with_params(&self.authorization_endpoint, &request.as_params())
-            .expect("Failed to create URL");
+        let url =
+            reqwest::Url::parse_with_params(&self.authorization_endpoint, &request.as_params())
+                .expect("Failed to create URL");
 
         let client = reqwest::Client::new();
 
@@ -138,16 +140,37 @@ impl OktaClient {
         // Scrape code from <input name='code' value='....' />
         let dom = scraper::Html::parse_document(&text);
         let selector = scraper::Selector::parse(r#"input[name="code"]"#).unwrap();
-        Ok(dom.select(&selector).next()
-            .expect("Missing Input with code- maybe got an error instead")
-            .value().attr("value").expect("Missing value on code").to_owned())
+
+        // Look for the input element named 'code'
+        let element = match dom.select(&selector).next() {
+            Some(element) => element,
+            None => {
+                return Err(OktaClientError::Parser(format!(
+                    "Could not find input element with name code: {}",
+                    text
+                )))
+            }
+        };
+
+        // Look for the value attribute of that element
+        match element.value().attr("value") {
+            Some(value) => Ok(value.to_owned()),
+            None => {
+                return Err(OktaClientError::Parser(format!(
+                    "Missing value on code: {}",
+                    text
+                )))
+            }
+        }
+
+        // TODO: read divs with class error-code, o-forn-title and o-form-explain for error details
     }
 }
 
 fn random_string() -> String {
-     rand::thread_rng()
-         .sample_iter(&rand::distributions::Alphanumeric)
-         .take(8)
-         .map(char::from)
-         .collect()
+    rand::thread_rng()
+        .sample_iter(&rand::distributions::Alphanumeric)
+        .take(8)
+        .map(char::from)
+        .collect()
 }

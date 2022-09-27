@@ -7,16 +7,30 @@ pub struct OpenIDConfig {
 
 /// Get OpenID config from .well-known
 #[tokio::main]
-pub async fn get_openid_config(base_url: String) -> Result<OpenIDConfig, OktaClientError> {
-    let url = format!("{}/oauth2/default/.well-known/openid-configuration", base_url);
+pub async fn get_openid_config(
+    base_url: String,
+    authorization_server_id: String,
+) -> Result<OpenIDConfig, OktaClientError> {
+    let url = format!(
+        "{}/oauth2/{}/.well-known/openid-configuration",
+        base_url, authorization_server_id
+    );
 
     let req = reqwest::get(url).await.expect("Error Getting URL");
-    let res = req.json::<std::collections::HashMap<String, serde_json::Value>>().await;
+    let res = req
+        .json::<std::collections::HashMap<String, serde_json::Value>>()
+        .await;
     let res = res.expect("Error parsing JSON");
 
-    let token_endpoint = res["token_endpoint"].as_str().expect("Missing token_endpoint");
-    let authorization_endpoint = res["authorization_endpoint"].as_str().expect("Missing authorization_endpoint");
+    let token_endpoint = res["token_endpoint"]
+        .as_str()
+        .expect("Missing token_endpoint");
+    let authorization_endpoint = res["authorization_endpoint"]
+        .as_str()
+        .expect("Missing authorization_endpoint");
 
-    Ok(OpenIDConfig { token_endpoint: token_endpoint.to_owned(), authorization_endpoint: authorization_endpoint.to_owned() })
+    Ok(OpenIDConfig {
+        token_endpoint: token_endpoint.to_owned(),
+        authorization_endpoint: authorization_endpoint.to_owned(),
+    })
 }
-

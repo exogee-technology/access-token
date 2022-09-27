@@ -21,6 +21,12 @@
       devShells.x86_64-linux.default = mkShell {
         buildInputs = [ 
           cargo
+          pkgconfig
+          openssl
+          openssl.dev
+          python3
+          xorg.libxcb.dev   # todo: linux only?
+          rustfmt
         ];
       };
 
@@ -40,7 +46,9 @@
           maintainers = [
             kyelewis
           ];
-       };
+        };
+
+      };
 
     };
 }
