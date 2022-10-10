@@ -2,7 +2,10 @@ build:
 	cargo build --release --bin auth-token
 
 build-gui:
-	cargo build --release --bin auth-token
+	cargo build --release --bin auth-token-gui
+
+publish:
+	cargo publish
 
 install-toolchains:
 	rustup target add aarch64-apple-darwin
