@@ -31,7 +31,7 @@ eyJra....
 
 ## Usage
 ```bash
-tako [--flags] [command]
+get-token command --flags
 
 # Commands
 okta-access-token
