@@ -1,4 +1,4 @@
-# tako: An OKTA Token CLI
+# get-token - A CLI to get an auut token
 
 ## Summary
 A small command-line application, written in rust, that allows you to get an OKTA token for use in an app.
@@ -11,14 +11,16 @@ See [Github Releases](https://github.com/TechInSite/okta-token-cli/releases)
 
 ## Example
 ```bash
-# Get an Access Token with provided username
-$ tako  --client-id XXXXyyyy --base-url https://myapp.okta.com/ 
-        --authorization-server-id abc123
-        --login-redirect-url http://myapp/callback 
-        --username my.user --copy-to-clipboard
-        get-access-token
+# Get an OKTA Access Toke
+$ get-token  okta-access-token
+             --client-id XXXXyyyy
+             --base-url https://myapp.okta.com/ 
+             --authorization-server-id abc123
+             --login-redirect-url http://myapp/callback 
+             --username my.user 
+             --copy-to-clipboard
 
-🎉 tako - An OKTA CLI Tool
+🎉 get-token - A CLI tool to get an auth token
 Password? (hidden) 
 
 🔐 Getting Access Token for my.user
@@ -31,6 +33,9 @@ eyJra....
 ```bash
 tako [--flags] [command]
 
+# Commands
+okta-access-token
+
 # Flags
 --base-url https://myapp.okta.com/
 --client-id XXXXyyyy
@@ -41,9 +46,6 @@ tako [--flags] [command]
 --password pa$sw0rd
 --copy-to-clipboard
 --print-token-json
-
-# Commands
-get-access-token
 ```
 
 ## Setting up on Mac
@@ -53,7 +55,7 @@ Run the file once by using right click / option click -> run, to approve the bin
 
 Add a tako command to the end of your `~/.zshrc` file:
 ```bash
-alias token="tako --client-id=XXXXyyyy --base-url=https://myapp.okta.com/ --login-redirect-url=http://myapp/callback --scopes='openid profile email groups' --username=my.user --copy-to-clipboard get-access-token"
+alias token="get-toke --client-id=XXXXyyyy --base-url=https://myapp.okta.com/ --login-redirect-url=http://myapp/callback --scopes='openid profile email groups' --username=my.user --copy-to-clipboard get-access-token"
 ```
 
 Open a new terminal, and run `token`!

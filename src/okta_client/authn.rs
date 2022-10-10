@@ -1,6 +1,7 @@
-use crate::okta::error::OktaClientError;
 /// Call the OKTA /api/v1/authn endpoint
-use crate::okta::OktaClient;
+///
+use crate::OktaClient;
+use crate::OktaClientError;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]

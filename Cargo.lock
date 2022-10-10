@@ -414,6 +414,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "get-token"
+version = "0.2.0"
+dependencies = [
+ "base64 0.13.0",
+ "chrono",
+ "clap",
+ "clipboard",
+ "colored",
+ "pkce",
+ "rand 0.8.3",
+ "reqwest",
+ "rpassword",
+ "scraper",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "getopts"
 version = "0.2.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1549,25 +1568,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-xid",
-]
-
-[[package]]
-name = "tako"
-version = "0.1.0"
-dependencies = [
- "base64 0.13.0",
- "chrono",
- "clap",
- "clipboard",
- "colored",
- "pkce",
- "rand 0.8.3",
- "reqwest",
- "rpassword",
- "scraper",
- "serde",
- "serde_json",
- "tokio",
 ]
 
 [[package]]

@@ -1,5 +1,8 @@
 build:
-	cargo build --release  --bin tako
+	cargo build --release --bin get-token
+
+build-gui:
+	cargo build --release --bin get-token-gui
 
 install-toolchains:
 	rustup target add aarch64-apple-darwin

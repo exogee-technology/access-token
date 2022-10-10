@@ -1,6 +1,6 @@
-use crate::okta::error::OktaClientError;
 /// Call the OAuth authorize endpoint
-use crate::okta::OktaClient;
+use crate::OktaClient;
+use crate::OktaClientError;
 use rand::Rng;
 use std::string::String;
 

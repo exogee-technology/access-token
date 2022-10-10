@@ -1,17 +1,15 @@
-mod okta;
-
-use crate::okta::error::OktaClientError;
-use base64::*;
+use okta_client::{OktaClientError, OktaClient};
 use clap::{App, Arg};
 use clipboard::ClipboardContext;
 use clipboard::ClipboardProvider;
 use colored::*; // TODO narrow scope
 
 fn main() {
-    let matches = App::new("tako")
-        .version("1.0")
-        .author("Kye Lewis <kye.lewis@techin.site>")
-        .about("An OKTA CLI Tool")
+    let matches = App::new("get-token")
+        .version("0.2.0")
+        .author("Kye Lewis <kye.lewis@exogee.com>")
+        .about("A CLI tool to get an access token")
+         .subcommand(App::new("okta-access-token").about("Returns an OKTA access token")
         .arg(
             Arg::new("base-url")
                 .long("base-url")
@@ -33,7 +31,7 @@ fn main() {
                 .about(
                     "If using a custom Authorization Server, the ID for that authorization server",
                 )
-                .default_missing_value("default"),
+                .default_value("default"),
         )
         .arg(
             Arg::new("copy-to-clipboard")
@@ -60,8 +58,8 @@ fn main() {
             Arg::new("scopes")
                 .long("scopes")
                 .value_name("scopes")
-                .default_missing_value("openid profile email")
-                .about("The scope(s) to request (ie. openid profile email)"),
+                .about("The scope(s) to request (ie. openid profile email)")
+                .default_value("openid profile email"),
         )
         .arg(
             Arg::new("username")
@@ -76,37 +74,38 @@ fn main() {
                 .value_name("password")
                 .about("OKTA password (optional, prompted on CLI if omitted)")
                 .required(false),
-        )
-        .subcommand(App::new("get-access-token").about("Returns a client access token"))
+         ))
         .get_matches();
 
-    eprintln!("🎉 tako - An OKTA CLI Tool");
+    eprintln!("🎉 get-token - A CLI tool to get an access token");
+
+    match matches.subcommand() {
+        Some(("okta-access-token", args)) => {
 
     // Read Base URL, Redirect URL and Client ID from flags.
-    let url = matches.value_of("base-url").unwrap().to_owned();
-    let login_redirect_url = matches.value_of("login-redirect-url").unwrap().to_owned();
-    let client_id = matches.value_of("client-id").unwrap().to_owned();
-    let authorization_server_id = matches
+    let url = args.value_of("base-url").unwrap().to_owned();
+    let login_redirect_url = args.value_of("login-redirect-url").unwrap().to_owned();
+    let client_id = args.value_of("client-id").unwrap().to_owned();
+    let authorization_server_id = args
         .value_of("authorization-server-id")
         .unwrap()
         .to_owned();
-    let scopes = matches.value_of("scopes").unwrap().to_owned();
-    let copy_to_clipboard = matches.is_present("copy-to-clipboard");
-    let print_token_json = matches.is_present("print-token-json");
+    let scopes = args.value_of("scopes").unwrap().to_owned();
+    let copy_to_clipboard = args.is_present("copy-to-clipboard");
+    let print_token_json = args.is_present("print-token-json");
 
     // Read Username and Password from flags, if provided, otherwise read from CLI.
-    let username = matches
+    let username = args
         .value_of("username")
         .map(|s| s.to_owned())
         .unwrap_or_else(|| read_input("Username? (hidden) ".to_owned()));
 
-    let password = matches
+    let password = args
         .value_of("password")
         .map(|s| s.to_owned())
         .unwrap_or_else(|| read_input("Password? (hidden) ".to_owned()));
 
-    match matches.subcommand() {
-        Some(("get-access-token", _)) => get_access_token(
+    get_access_token(
             url,
             login_redirect_url,
             client_id,
@@ -116,9 +115,14 @@ fn main() {
             scopes,
             copy_to_clipboard,
             print_token_json,
-        ),
-        _ => {}
+        )
+
+        },
+        _ => {
+            println!("Run with --help for usage.")
+        },
     }
+
 }
 
 fn get_access_token(
@@ -137,7 +141,7 @@ fn get_access_token(
         username.to_owned().underline()
     );
 
-    let client = okta::OktaClient::new(
+    let client = OktaClient::new(
         username.to_owned(),
         password.to_owned(),
         client_id.to_owned(),
