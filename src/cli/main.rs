@@ -8,7 +8,7 @@ fn main() {
     let matches = App::new("auth-token")
         .version(env!("CARGO_PKG_VERSION"))
         .author("Kye Lewis <kye.lewis@exogee.com>")
-        .help("A CLI tool to get an access token for use in development.")
+        .about("A CLI tool to get an access token for use in development.")
          .subcommand(App::new("okta-access-token").help("Returns an OKTA access token")
         .arg(
             Arg::new("base-url")
