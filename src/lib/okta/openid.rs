@@ -1,5 +1,6 @@
+use crate::okta::OktaClientError;
+
 use std::collections::{HashMap};
-use crate::OktaClientError;
 use scraper::{Selector, Html};
 
 pub struct OpenIDConfig {

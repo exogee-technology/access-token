@@ -14,6 +14,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "auth_token"
+version = "0.2.0"
+dependencies = [
+ "base64 0.13.0",
+ "chrono",
+ "clap",
+ "clipboard",
+ "colored",
+ "pkce",
+ "rand 0.8.3",
+ "reqwest",
+ "rpassword",
+ "scraper",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "autocfg"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -411,25 +430,6 @@ checksum = "501466ecc8a30d1d3b7fc9229b122b2ce8ed6e9d9223f1138d4babb253e51817"
 dependencies = [
  "typenum",
  "version_check",
-]
-
-[[package]]
-name = "get-token"
-version = "0.2.0"
-dependencies = [
- "base64 0.13.0",
- "chrono",
- "clap",
- "clipboard",
- "colored",
- "pkce",
- "rand 0.8.3",
- "reqwest",
- "rpassword",
- "scraper",
- "serde",
- "serde_json",
- "tokio",
 ]
 
 [[package]]

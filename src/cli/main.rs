@@ -1,14 +1,14 @@
-use okta_client::{OktaClientError, OktaClient};
+use auth_token::okta::{OktaClientError, OktaClient};
 use clap::{App, Arg};
 use clipboard::ClipboardContext;
 use clipboard::ClipboardProvider;
 use colored::*; // TODO narrow scope
 
 fn main() {
-    let matches = App::new("get-token")
+    let matches = App::new("auth-token")
         .version("0.2.0")
         .author("Kye Lewis <kye.lewis@exogee.com>")
-        .about("A CLI tool to get an access token")
+        .about("A CLI tool to get an access token for use in development.")
          .subcommand(App::new("okta-access-token").about("Returns an OKTA access token")
         .arg(
             Arg::new("base-url")
@@ -77,7 +77,7 @@ fn main() {
          ))
         .get_matches();
 
-    eprintln!("🎉 get-token - A CLI tool to get an access token");
+    eprintln!("🎉 auth-token - A CLI tool to get an access token for use in development.");
 
     match matches.subcommand() {
         Some(("okta-access-token", args)) => {
@@ -137,7 +137,7 @@ fn get_access_token(
     print_token_json: bool,
 ) -> () {
     eprintln!(
-        "\n🔐 Getting Access Token for {}",
+        "🔐 Getting Access Token for {}",
         username.to_owned().underline()
     );
 
@@ -161,8 +161,8 @@ fn get_access_token(
 
                 if copy_to_clipboard {
                     eprintln!(
-                        "\n✅  {}",
-                        "OKTA Token Copied To Clipboard\n".green().bold()
+                        "✅  {}",
+                        "Access Token Copied To Clipboard\n".green().bold()
                     );
                     let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
                     ctx.set_contents(token.to_owned()).unwrap();
@@ -178,8 +178,8 @@ fn get_access_token(
 
                             if copy_to_clipboard {
                                 eprintln!(
-                                    "\n✅  {}",
-                                    "OKTA Token JSON Copied To Clipboard\n".green().bold()
+                                    "✅  {}",
+                                    "Access Token JSON Copied To Clipboard\n".green().bold()
                                 );
                                 let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
                                 ctx.set_contents(decoded_token_section_string.to_owned())

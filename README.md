@@ -1,18 +1,18 @@
-# get-token - A CLI to get an auth token
+# auth-token
 
 ## Summary
-A small command-line application, written in rust, that allows you to get an auth token for use in an app.
+A small CLI application and rust library, that allows you to get an auth token for use in development.
 
 ## Screenshot
 <img src="screenshot.png?raw=true" height="200">
 
 ## Binary Releases
-See [Github Releases](https://github.com/TechInSite/okta-token-cli/releases)
+See [Github Releases](https://github.com/exogee-technology/auth-token/releases)
 
 ## Example
 ```bash
 # Get an OKTA Access Token
-$ get-token  okta-access-token
+$ auth-token  okta-access-token
              --client-id XXXXyyyy
              --base-url https://myapp.okta.com/ 
              --authorization-server-id abc123
@@ -20,18 +20,19 @@ $ get-token  okta-access-token
              --username my.user 
              --copy-to-clipboard
 
-🎉 get-token - A CLI tool to get an auth token
+🎉 auth-token - A CLI tool to get an auth token for use in development.
 Password? (hidden) 
 
 🔐 Getting Access Token for my.user
-✅ OKTA Token Copied To Clipboard
+
+✅ Token Copied To Clipboard
 
 eyJra....
 ```
 
 ## Usage
 ```bash
-get-token command --flags
+auth-token command --flags
 
 # Commands
 okta-access-token
@@ -49,13 +50,13 @@ okta-access-token
 ```
 
 ## Setting up on Mac
-Download the release from [Github Releases](https://github.com/TechInSite/okta-token-cli/releases) and copy to your home directory.
+Download the release from [Github Releases](https://github.com/exogee-technology/auth-token/releases) and copy to your home directory.
 
 Run the file once by using right click / option click -> run, to approve the binary through gatekeeper.
 
-Add a tako command to the end of your `~/.zshrc` file:
+Add a command to the end of your `~/.zshrc` file:
 ```bash
-alias token="get-toke --client-id=XXXXyyyy --base-url=https://myapp.okta.com/ --login-redirect-url=http://myapp/callback --scopes='openid profile email groups' --username=my.user --copy-to-clipboard get-access-token"
+alias token="auth-token okta-auth-token --client-id=XXXXyyyy --base-url=https://myapp.okta.com/ --login-redirect-url=http://myapp/callback --scopes='openid profile email groups' --username=my.user --copy-to-clipboard"
 ```
 
 Open a new terminal, and run `token`!

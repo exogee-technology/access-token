@@ -31,7 +31,7 @@
       };
 
       packages.x86-64-linux.default = rustPlatform.buildRustPackage rec {
-        pname = "get-token";
+        pname = "auth-token";
         version = "0.2.0";
         cargoSha256 = lib.fakeSha256;
         cargoLock.lockFile = ./Cargo.lock;
@@ -40,8 +40,8 @@
         nativeBuildInputs = [ pkgconfig python3 ];
 
         meta = with lib; {
-          description = "A small CLI application, written in rust, that allows you to get an auth token for use in an app.";
-          homepage = "https://github.com/exogee-technology/get-token";
+          description = "A small CLI application, written in rust, that allows you to get an auth token for use in development.";
+          homepage = "https://github.com/exogee-technology/auth-token";
           license = licenses.mit;
           maintainers = [
             kyelewis

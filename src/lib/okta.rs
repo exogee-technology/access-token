@@ -1,5 +1,3 @@
-pub use crate::error::OktaClientError;
-
 mod authn;
 mod authorize;
 mod error;
@@ -7,6 +5,7 @@ mod openid;
 mod pkce;
 mod token;
 
+pub use error::OktaClientError;
 
 pub struct OktaClient {
     client_id: String,

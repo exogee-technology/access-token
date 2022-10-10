@@ -1,5 +1,6 @@
 /// Call the OAuth token endpoint
-use crate::OktaClient;
+use crate::okta::OktaClient;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
