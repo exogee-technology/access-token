@@ -1,7 +1,7 @@
-# get-token - A CLI to get an auut token
+# get-token - A CLI to get an auth token
 
 ## Summary
-A small command-line application, written in rust, that allows you to get an OKTA token for use in an app.
+A small command-line application, written in rust, that allows you to get an auth token for use in an app.
 
 ## Screenshot
 <img src="screenshot.png?raw=true" height="200">
@@ -11,7 +11,7 @@ See [Github Releases](https://github.com/TechInSite/okta-token-cli/releases)
 
 ## Example
 ```bash
-# Get an OKTA Access Toke
+# Get an OKTA Access Token
 $ get-token  okta-access-token
              --client-id XXXXyyyy
              --base-url https://myapp.okta.com/ 
