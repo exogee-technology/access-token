@@ -6,29 +6,29 @@ use colored::*; // TODO narrow scope
 
 fn main() {
     let matches = App::new("auth-token")
-        .version("0.2.0")
+        .version(env!("CARGO_PKG_VERSION"))
         .author("Kye Lewis <kye.lewis@exogee.com>")
-        .about("A CLI tool to get an access token for use in development.")
-         .subcommand(App::new("okta-access-token").about("Returns an OKTA access token")
+        .help("A CLI tool to get an access token for use in development.")
+         .subcommand(App::new("okta-access-token").help("Returns an OKTA access token")
         .arg(
             Arg::new("base-url")
                 .long("base-url")
                 .value_name("base-url")
-                .about("Base URL of the OKTA Tenant (ie. https://myapp.okta.com/)")
+                .help("Base URL of the OKTA Tenant (ie. https://myapp.okta.com/)")
                 .required(true),
         )
         .arg(
             Arg::new("client-id")
                 .value_name("client-id")
                 .long("client-id")
-                .about("The OKTA Client ID associated with the app")
+                .help("The OKTA Client ID associated with the app")
                 .required(true),
         )
         .arg(
             Arg::new("authorization-server-id")
                 .value_name("authorization-server-id")
                 .long("authorization-server-id")
-                .about(
+                .help(
                     "If using a custom Authorization Server, the ID for that authorization server",
                 )
                 .default_value("default"),
@@ -38,41 +38,41 @@ fn main() {
                 .long("copy-to-clipboard")
                 .value_name("copy-to-clipboard")
                 .takes_value(false)
-                .about("Copy the result to the system clipboard"),
+                .help("Copy the result to the system clipboard"),
         )
         .arg(
             Arg::new("print-token-json")
                 .long("print-token-json")
                 .value_name("print-token-json")
                 .takes_value(false)
-                .about("Print the JSON of the token to stdout instead of the token itself"),
+                .help("Print the JSON of the token to stdout instead of the token itself"),
         )
         .arg(
             Arg::new("login-redirect-url")
                 .long("login-redirect-url")
                 .value_name("login-redirect-url")
-                .about("OKTA Login Redirect URL associated with the app")
+                .help("OKTA Login Redirect URL associated with the app")
                 .required(true),
         )
         .arg(
             Arg::new("scopes")
                 .long("scopes")
                 .value_name("scopes")
-                .about("The scope(s) to request (ie. openid profile email)")
+                .help("The scope(s) to request (ie. openid profile email)")
                 .default_value("openid profile email"),
         )
         .arg(
             Arg::new("username")
                 .long("username")
                 .value_name("username")
-                .about("OKTA username (optional, prompted on CLI if omitted)")
+                .help("OKTA username (optional, prompted on CLI if omitted)")
                 .required(false),
         )
         .arg(
             Arg::new("password")
                 .long("password")
                 .value_name("password")
-                .about("OKTA password (optional, prompted on CLI if omitted)")
+                .help("OKTA password (optional, prompted on CLI if omitted)")
                 .required(false),
          ))
         .get_matches();
