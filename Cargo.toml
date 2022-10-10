@@ -1,8 +1,13 @@
 [package]
 name = "get-token"
+description = "Get an auth token to use in development"
+homepage = "https://github.com/exogee-technology/get-token"
+readme = "README.md"
+repository = "https://github.com/exogee-technology/get-token"
 version = "0.2.0"
 authors = ["Kye Lewis <kye.lewis@exogee.com>"]
 edition = "2018"
+license = "MIT"
 
 [lib]
 name = "okta_client"
