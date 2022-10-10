@@ -1,4 +1,4 @@
-use auth_token::okta::{OktaClientError, OktaClient};
+use auth_token::okta::{OktaClient, OktaClientError};
 use clap::{App, Arg};
 use clipboard::ClipboardContext;
 use clipboard::ClipboardProvider;
@@ -81,48 +81,43 @@ fn main() {
 
     match matches.subcommand() {
         Some(("okta-access-token", args)) => {
+            // Read Base URL, Redirect URL and Client ID from flags.
+            let url = args.value_of("base-url").unwrap().to_owned();
+            let login_redirect_url = args.value_of("login-redirect-url").unwrap().to_owned();
+            let client_id = args.value_of("client-id").unwrap().to_owned();
+            let authorization_server_id =
+                args.value_of("authorization-server-id").unwrap().to_owned();
+            let scopes = args.value_of("scopes").unwrap().to_owned();
+            let copy_to_clipboard = args.is_present("copy-to-clipboard");
+            let print_token_json = args.is_present("print-token-json");
 
-    // Read Base URL, Redirect URL and Client ID from flags.
-    let url = args.value_of("base-url").unwrap().to_owned();
-    let login_redirect_url = args.value_of("login-redirect-url").unwrap().to_owned();
-    let client_id = args.value_of("client-id").unwrap().to_owned();
-    let authorization_server_id = args
-        .value_of("authorization-server-id")
-        .unwrap()
-        .to_owned();
-    let scopes = args.value_of("scopes").unwrap().to_owned();
-    let copy_to_clipboard = args.is_present("copy-to-clipboard");
-    let print_token_json = args.is_present("print-token-json");
+            // Read Username and Password from flags, if provided, otherwise read from CLI.
+            let username = args
+                .value_of("username")
+                .map(|s| s.to_owned())
+                .unwrap_or_else(|| read_input("Username? (hidden) ".to_owned()));
 
-    // Read Username and Password from flags, if provided, otherwise read from CLI.
-    let username = args
-        .value_of("username")
-        .map(|s| s.to_owned())
-        .unwrap_or_else(|| read_input("Username? (hidden) ".to_owned()));
+            let password = args
+                .value_of("password")
+                .map(|s| s.to_owned())
+                .unwrap_or_else(|| read_input("Password? (hidden) ".to_owned()));
 
-    let password = args
-        .value_of("password")
-        .map(|s| s.to_owned())
-        .unwrap_or_else(|| read_input("Password? (hidden) ".to_owned()));
-
-    get_access_token(
-            url,
-            login_redirect_url,
-            client_id,
-            authorization_server_id,
-            username,
-            password,
-            scopes,
-            copy_to_clipboard,
-            print_token_json,
-        )
-
-        },
+            get_access_token(
+                url,
+                login_redirect_url,
+                client_id,
+                authorization_server_id,
+                username,
+                password,
+                scopes,
+                copy_to_clipboard,
+                print_token_json,
+            )
+        }
         _ => {
             println!("Run with --help for usage.")
-        },
+        }
     }
-
 }
 
 fn get_access_token(
