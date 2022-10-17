@@ -24,7 +24,7 @@ dependencies = [
 
 [[package]]
 name = "auth_token"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "base64 0.13.0",
  "chrono",

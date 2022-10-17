@@ -27,12 +27,13 @@
           python3
           xorg.libxcb.dev   # todo: linux only?
           rustfmt
+          rustup
         ];
       };
 
       packages.x86-64-linux.default = rustPlatform.buildRustPackage rec {
         pname = "auth-token";
-        version = "0.2.0";
+        version = "0.2.3";
         cargoSha256 = lib.fakeSha256;
         cargoLock.lockFile = ./Cargo.lock;
   

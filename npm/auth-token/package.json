@@ -1,0 +1,17 @@
+{
+  "name": "@exogee/auth-token",
+  "version": "0.2.3",
+  "description": "Get an auth token to use in development",
+  "repository": "https://github.com/exogee-technology/auth-token",
+  "bin": {
+    "auth-token": "bin/auth-token"
+  },
+  "optionalDependencies": {
+    "@exogee/auth-token-darwin-64": "0.2.3",
+    "@exogee/auth-token-darwin-arm64": "0.2.3",
+    "@exogee/auth-token-linux-64": "0.2.3",
+    "@exogee/auth-token-linux-arm64": "0.2.3",
+    "@exogee/auth-token-windows-64": "0.2.3"
+  },
+  "license": "MIT"
+}

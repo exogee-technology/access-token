@@ -1,0 +1,12 @@
+{
+  "name": "@exogee/auth-token-darwin-64",
+  "version": "0.2.3",
+  "description": "macOS 64-bit intel binary for @exogee/auth-token",
+  "license": "MIT",
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "x64"
+  ]
+}

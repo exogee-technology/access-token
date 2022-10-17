@@ -3,9 +3,6 @@
 ## Summary
 A small CLI application and rust library, that allows you to get an auth token for use in development.
 
-## Screenshot
-<img src="screenshot.png?raw=true" height="200">
-
 ## Binary Releases
 See [Github Releases](https://github.com/exogee-technology/auth-token/releases)
 
